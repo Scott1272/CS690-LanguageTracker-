@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Spectre.Console;
 
 namespace LanguageTracker
 {
@@ -16,7 +17,13 @@ namespace LanguageTracker
         public void Show()
         {
             // Prompt user to select a mode
-            string mode = AskForInput("Please Select a user (Mateo or Other): ");
+            
+                    var mode = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                        .Title("Please select the user (Mateo OR Other): ")
+                        .AddChoices(new[] {
+                            "Mateo", "Other",
+                        }));
 
             // Check if the selected mode is "Mateo"
             if (mode == "Mateo")
@@ -30,15 +37,37 @@ namespace LanguageTracker
                     string NewWord = AskForInput("Enter new word: ");
 
                     // Ask for the comprehension score and parse it to an integer
-                    int ComprehensionScore = int.Parse(AskForInput("Enter Comprehension Score: "));
+                    // Possible Delete int ComprehensionScore = int.Parse(AskForInput("Enter Comprehension Score: "));
+
+                    string comprehensionLevel = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                            .Title("Please select the level of Comprehension:")
+                            .AddChoices(new[] {
+                                "Low Comprehension", "Still learning", "Very Fluent",
+                            }));
+
+                    int ComprehensionScore = comprehensionLevel switch
+                    {
+                        "Low Comprehension" => 1,
+                        "Still learning" => 2,
+                        "Very Fluent" => 3,
+                        _ => 0
+                    };
+
 
                     // Append the new word and score to the file
                     fileSaver.AppendLine(NewWord + ":" + ComprehensionScore);
 
                     // Ask for the next command from the user
-                    command = AskForInput("Enter command (end or continue): ");
+                    
+                    command = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                        .Title("What would you like to do next (Continue OR End): ")
+                        .AddChoices(new[] {
+                            "Continue", "End",
+                        }));
 
-                } while (command != "end"); // Continue until the user types "end"
+                } while (command != "End"); // Continue until the user types "end"
             }
         }
 
