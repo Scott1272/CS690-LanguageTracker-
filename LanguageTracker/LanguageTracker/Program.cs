@@ -1,9 +1,13 @@
-﻿namespace LanguageTracker;
+﻿using System;
 
-class Program
+namespace LanguageTracker
 {
-    static void Main(string[] args)
+    class Program
     {
-        Console.WriteLine("Hello, World!");
+        static void Main(string[] args)
+        {
+            ConsoleUI theUI = new ConsoleUI();
+            theUI.Show();
+        }
     }
 }
