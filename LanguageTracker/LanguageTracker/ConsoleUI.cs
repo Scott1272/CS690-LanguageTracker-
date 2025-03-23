@@ -9,7 +9,7 @@ namespace LanguageTracker
     {
         FileSaver fileSaver;
         List<string> Tasks;
-        
+
         public ConsoleUI()
         {
             fileSaver = new FileSaver("SpanishVocab.data.txt");
@@ -31,27 +31,32 @@ namespace LanguageTracker
                 new SelectionPrompt<string>()
                     .Title("Please select the user (Mateo OR Other): ")
                     .AddChoices(new[] { "Mateo", "Other" }));
+            Console.WriteLine("You are now signed in as " + mode);
 
             // Check if the selected mode is "Mateo"
             if (mode == "Mateo")
             {
-                var selectedTask = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("Select a Task: ")
-                        .AddChoices(Tasks));
-                Console.WriteLine("You have selected to " + selectedTask);
-
-                string command;
+                string command = "Continue";
 
                 // Loop to continuously ask for new words and comprehension scores
                 do
                 {
+                    var selectedTask = AnsiConsole.Prompt(
+                        new SelectionPrompt<string>()
+                            .Title("Select a Task: ")
+                            .AddChoices(Tasks));
+                    Console.WriteLine("You have selected to " + selectedTask);
+
                     // Ask for a new word from the user
                     string newWord = AskForInput("Enter new word: ");
+
+                    Console.WriteLine("You have entered the word " + newWord);
 
                     // Check if the word already exists in the file
                     if (fileSaver.WordExists(newWord))
                     {
+                        Console.WriteLine("The word already exists in the file.");
+
                         // Update comprehension score and timestamp for existing word
                         string comprehensionLevel = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
@@ -59,6 +64,8 @@ namespace LanguageTracker
                                 .AddChoices(new[] {
                                     "Low Comprehension", "Still learning", "Very Fluent",
                                 }));
+
+                        Console.WriteLine("Your current rating for that word is " + comprehensionLevel);
 
                         int comprehensionScore = comprehensionLevel switch
                         {
@@ -68,6 +75,8 @@ namespace LanguageTracker
                             _ => 0
                         };
 
+                        Console.WriteLine("Based on your rating of that word your score is a " + comprehensionScore);
+
                         // Get the current timestamp
                         string timestamp = DateTime.Now.ToString("MM/dd/yyyy");
 
@@ -76,6 +85,8 @@ namespace LanguageTracker
                     }
                     else
                     {
+                        Console.WriteLine("The word does not exist in the file.");
+
                         // Ask for the comprehension score and parse it to an integer
                         string comprehensionLevel = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
