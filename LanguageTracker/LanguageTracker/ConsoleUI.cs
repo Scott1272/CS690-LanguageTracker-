@@ -7,19 +7,18 @@ namespace LanguageTracker
 {
     public class ConsoleUI
     {
-        FileSaver fileSaver;
+        DataManager dataManager;
         List<string> Tasks;
 
         public ConsoleUI()
         {
-            fileSaver = new FileSaver("SpanishVocab.data.txt");
+            dataManager = new DataManager("SpanishVocab.data.txt");
 
             Tasks = new List<string>
             {
                 "Enter New Word",
                 "Update Comprehension Score",
-                "View Report",
-                "End"
+                "View Report"
             };
         }
 
@@ -30,7 +29,7 @@ namespace LanguageTracker
             var mode = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Please select the user (Mateo OR Other): ")
-                    .AddChoices(new[] { "Mateo", "Other" }));
+                    .AddChoices(new[] { "Mateo", "Report Generator" }));
             Console.WriteLine("You are now signed in as " + mode);
 
             // Check if the selected mode is "Mateo"
@@ -53,7 +52,7 @@ namespace LanguageTracker
                     Console.WriteLine("You have entered the word " + newWord);
 
                     // Check if the word already exists in the file
-                    if (fileSaver.WordExists(newWord))
+                    if (dataManager.WordExists(newWord))
                     {
                         Console.WriteLine("The word already exists in the file.");
 
@@ -81,7 +80,7 @@ namespace LanguageTracker
                         string timestamp = DateTime.Now.ToString("MM/dd/yyyy");
 
                         // Update the existing word's score and timestamp
-                        fileSaver.UpdateWord(newWord, comprehensionScore, timestamp);
+                        dataManager.UpdateWord(newWord, comprehensionScore, timestamp);
                     }
                     else
                     {
@@ -107,7 +106,7 @@ namespace LanguageTracker
                         string timestamp = DateTime.Now.ToString("MM/dd/yyyy");
 
                         // Append the new word and score to the file
-                        fileSaver.AppendLine(newWord + ":" + comprehensionScore + ":" + timestamp);
+                        dataManager.AppendLine(newWord + ":" + comprehensionScore + ":" + timestamp);
                     }
 
                     // Ask for the next command from the user
