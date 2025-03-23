@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace LanguageTracker
 {
@@ -50,6 +51,58 @@ namespace LanguageTracker
             {
                 sw.WriteLine(line);
             }
+        }
+
+        public int GetComprehensionScore(string word)
+        {
+            if (!File.Exists(filePath))
+            {
+                return 0;
+            }
+
+            var lines = File.ReadAllLines(filePath);
+            var line = lines.FirstOrDefault(l => l.StartsWith(word + ":"));
+            if (line != null)
+            {
+                var parts = line.Split(':');
+                if (parts.Length == 3 && int.TryParse(parts[1], out int score))
+                {
+                    return score;
+                }
+            }
+
+            return 0;
+        }
+
+        public string GetTimestamp(string word)
+        {
+            if (!File.Exists(filePath))
+            {
+                return string.Empty;
+            }
+
+            var lines = File.ReadAllLines(filePath);
+            var line = lines.FirstOrDefault(l => l.StartsWith(word + ":"));
+            if (line != null)
+            {
+                var parts = line.Split(':');
+                if (parts.Length == 3)
+                {
+                    return parts[2];
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public List<string> GetAllWords()
+        {
+            if (!File.Exists(filePath))
+            {
+                return new List<string>();
+            }
+
+            return File.ReadAllLines(filePath).ToList();
         }
     }
 }
