@@ -10,9 +10,9 @@ namespace LanguageTracker
         DataManager dataManager;
         List<string> Tasks;
 
-        public ConsoleUI()
+        public ConsoleUI(DataManager dataManager)
         {
-            dataManager = new DataManager("SpanishVocab.data.txt");
+            this.dataManager = dataManager;
 
             Tasks = new List<string>
             {
@@ -116,6 +116,27 @@ namespace LanguageTracker
                             .AddChoices(new[] { "Continue", "End" }));
 
                 } while (command != "End"); // Continue until the user types "End"
+            }
+            else if (mode == "Report Generator")
+            {
+                var table = new Table();
+
+                table.AddColumn("Word");
+                table.AddColumn("Comprehension Score");
+                table.AddColumn("Date");
+
+                List<string> collectedWords = dataManager.GetAllWords();
+                Console.WriteLine("Collected Words:");
+                foreach (var word in collectedWords)
+                {
+                    var parts = word.Split(':');
+                    if (parts.Length == 3)
+                    {
+                        table.AddRow(parts[0], parts[1], parts[2]);
+                    }
+                }
+
+                AnsiConsole.Write(table);
             }
         }
 
