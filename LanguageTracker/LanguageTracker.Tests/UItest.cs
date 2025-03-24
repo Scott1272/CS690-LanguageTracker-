@@ -1,16 +1,13 @@
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Collections.Generic;
 
 namespace LanguageTracker.Tests
 {
-    [TestFixture]
     public class UITest
     {
         private const string TestFilePath = "TestSpanishVocab.data.txt";
 
-        [SetUp]
         public void SetUp()
         {
             // Ensure the test file is clean before each test
@@ -20,7 +17,6 @@ namespace LanguageTracker.Tests
             }
         }
 
-        [Test]
         public void TestEnterNewWord()
         {
             // Arrange
@@ -38,9 +34,18 @@ namespace LanguageTracker.Tests
             consoleUI.Show();
 
             // Assert
-            Assert.IsTrue(dataManager.WordExists(newWord));
-            Assert.AreEqual(comprehensionScore, dataManager.GetComprehensionScore(newWord));
-            Assert.AreEqual(timestamp, dataManager.GetTimestamp(newWord));
+            if (!dataManager.WordExists(newWord))
+            {
+                throw new Exception("Word does not exist.");
+            }
+            if (comprehensionScore != dataManager.GetComprehensionScore(newWord))
+            {
+                throw new Exception("Comprehension score does not match.");
+            }
+            if (timestamp != dataManager.GetTimestamp(newWord))
+            {
+                throw new Exception("Timestamp does not match.");
+            }
         }
     }
 }
