@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Xunit;
 
 namespace LanguageTracker.Tests
 {
@@ -8,22 +9,24 @@ namespace LanguageTracker.Tests
     {
         private const string TestFilePath = "TestSpanishVocab.data.txt";
 
+        // Ensure the test file is clean before each test
         public void SetUp()
         {
-            // Ensure the test file is clean before each test
             if (File.Exists(TestFilePath))
             {
                 File.Delete(TestFilePath);
             }
         }
 
+        [Fact]
         public void TestEnterNewWord()
         {
             // Arrange
+            SetUp(); // Clean up the test file before running the test
             var dataManager = new DataManager(TestFilePath);
             var consoleUI = new ConsoleUI(dataManager);
             string newWord = "Rainbow";
-            int comprehensionScore = 2;
+            int comprehensionScore = 2; // "Still learning" corresponds to score 2
             string timestamp = DateTime.Now.ToString("MM/dd/yyyy");
 
             // Simulate user input
@@ -34,18 +37,9 @@ namespace LanguageTracker.Tests
             consoleUI.Show();
 
             // Assert
-            if (!dataManager.WordExists(newWord))
-            {
-                throw new Exception("Word does not exist.");
-            }
-            if (comprehensionScore != dataManager.GetComprehensionScore(newWord))
-            {
-                throw new Exception("Comprehension score does not match.");
-            }
-            if (timestamp != dataManager.GetTimestamp(newWord))
-            {
-                throw new Exception("Timestamp does not match.");
-            }
+            Assert.True(dataManager.WordExists(newWord), "Word does not exist in the data file.");
+            Assert.Equal(comprehensionScore, dataManager.GetComprehensionScore(newWord));
+            Assert.Equal(timestamp, dataManager.GetTimestamp(newWord));
         }
     }
 }

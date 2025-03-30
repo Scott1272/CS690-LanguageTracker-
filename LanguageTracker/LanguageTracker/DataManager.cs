@@ -14,6 +14,7 @@ namespace LanguageTracker
             this.filePath = filePath;
         }
 
+        // Check if a word exists in the file
         public bool WordExists(string word)
         {
             if (!File.Exists(filePath))
@@ -25,6 +26,7 @@ namespace LanguageTracker
             return lines.Any(line => line.StartsWith(word + ":"));
         }
 
+        // Update the comprehension score and timestamp for an existing word
         public void UpdateWord(string word, int score, string timestamp)
         {
             if (!File.Exists(filePath))
@@ -45,6 +47,7 @@ namespace LanguageTracker
             File.WriteAllLines(filePath, lines);
         }
 
+        // Append a new word entry to the file
         public void AppendLine(string line)
         {
             using (StreamWriter sw = File.AppendText(filePath))
@@ -53,48 +56,7 @@ namespace LanguageTracker
             }
         }
 
-        public int GetComprehensionScore(string word)
-        {
-            if (!File.Exists(filePath))
-            {
-                return 0;
-            }
-
-            var lines = File.ReadAllLines(filePath);
-            var line = lines.FirstOrDefault(l => l.StartsWith(word + ":"));
-            if (line != null)
-            {
-                var parts = line.Split(':');
-                if (parts.Length == 3 && int.TryParse(parts[1], out int score))
-                {
-                    return score;
-                }
-            }
-
-            return 0;
-        }
-
-        public string GetTimestamp(string word)
-        {
-            if (!File.Exists(filePath))
-            {
-                return string.Empty;
-            }
-
-            var lines = File.ReadAllLines(filePath);
-            var line = lines.FirstOrDefault(l => l.StartsWith(word + ":"));
-            if (line != null)
-            {
-                var parts = line.Split(':');
-                if (parts.Length == 3)
-                {
-                    return parts[2];
-                }
-            }
-
-            return string.Empty;
-        }
-
+        // Retrieve all words from the file
         public List<string> GetAllWords()
         {
             if (!File.Exists(filePath))
@@ -103,6 +65,41 @@ namespace LanguageTracker
             }
 
             return File.ReadAllLines(filePath).ToList();
+        }
+
+        // Get the total number of words in the file
+        public int GetTotalWords()
+        {
+            if (!File.Exists(filePath))
+            {
+                return 0;
+            }
+
+            return File.ReadAllLines(filePath).Length;
+        }
+
+        // Get the number of words by comprehension level
+        public int GetWordsByComprehensionLevel(string level)
+        {
+            if (!File.Exists(filePath))
+            {
+                return 0;
+            }
+
+            var lines = File.ReadAllLines(filePath);
+            int score = level switch
+            {
+                "Just Started" => 1,
+                "Still learning" => 2,
+                "Very Fluent" => 3,
+                _ => 0
+            };
+
+            return lines.Count(line =>
+            {
+                var parts = line.Split(':');
+                return parts.Length == 3 && int.TryParse(parts[1], out int parsedScore) && parsedScore == score;
+            });
         }
     }
 }
