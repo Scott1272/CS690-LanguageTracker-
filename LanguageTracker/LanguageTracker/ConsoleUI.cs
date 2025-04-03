@@ -18,7 +18,6 @@ namespace LanguageTracker
             {
                 "Enter New Word",
                 "Update Comprehension Score",
-                "View Report"
             };
         }
 
@@ -28,9 +27,9 @@ namespace LanguageTracker
             // Prompt user to select a mode
             var mode = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("Please select the user (Mateo OR Other): ")
-                    .AddChoices(new[] { "Mateo", "Report Generator" }));
-            Console.WriteLine("You are now signed in as " + mode);
+                    .Title("Please select the user (Mateo OR View Mateo's Vocabulary Report): ")
+                    .AddChoices(new[] { "Mateo", "View Vocabulary Report" }));
+            Console.WriteLine("Welcome " + mode + " to your Language Tracker");
 
             // Check if the selected mode is "Mateo"
             if (mode == "Mateo")
@@ -49,26 +48,26 @@ namespace LanguageTracker
                     // Ask for a new word from the user
                     string newWord = AskForInput("Enter new word: ");
 
-                    Console.WriteLine("You have entered the word " + newWord);
+                    Console.WriteLine("WELCOME " + newWord + " To your Language Tracker");
 
                     // Check if the word already exists in the file
                     if (dataManager.WordExists(newWord))
                     {
-                        Console.WriteLine("The word already exists in the file.");
+                        Console.WriteLine("The word you entered already exists in the file.");
 
                         // Update comprehension score and timestamp for existing word
                         string comprehensionLevel = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
                                 .Title("Please select the level of Comprehension:")
                                 .AddChoices(new[] {
-                                    "Low Comprehension", "Still learning", "Very Fluent",
+                                    "Just Started", "Still learning", "Very Fluent",
                                 }));
 
                         Console.WriteLine("Your current rating for that word is " + comprehensionLevel);
 
                         int comprehensionScore = comprehensionLevel switch
                         {
-                            "Low Comprehension" => 1,
+                            "Just Started" => 1,
                             "Still learning" => 2,
                             "Very Fluent" => 3,
                             _ => 0
@@ -84,19 +83,19 @@ namespace LanguageTracker
                     }
                     else
                     {
-                        Console.WriteLine("The word does not exist in the file.");
+                        Console.WriteLine("The word you entered does not exist in the file.");
 
                         // Ask for the comprehension score and parse it to an integer
                         string comprehensionLevel = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
                                 .Title("Please select the level of Comprehension:")
                                 .AddChoices(new[] {
-                                    "Low Comprehension", "Still learning", "Very Fluent",
+                                    "Just Started", "Still learning", "Very Fluent",
                                 }));
 
                         int comprehensionScore = comprehensionLevel switch
                         {
-                            "Low Comprehension" => 1,
+                            "Just Started" => 1,
                             "Still learning" => 2,
                             "Very Fluent" => 3,
                             _ => 0
@@ -112,19 +111,21 @@ namespace LanguageTracker
                     // Ask for the next command from the user
                     command = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()
-                            .Title("What would you like to do next (Continue OR End): ")
-                            .AddChoices(new[] { "Continue", "End" }));
+                            .Title("What would you like to do next (Continue Entering Information OR Quit Program and take a break): ")
+                            .AddChoices(new[] { "Continue", "Quit" }));
 
-                } while (command != "End"); // Continue until the user types "End"
+                } while (command != "Quit"); // Continue until the user types "Quit"
             }
-            else if (mode == "Report Generator")
+            else if (mode == "View Vocabulary Report")
             {
+                // Create a table to display the vocabulary report
                 var table = new Table();
 
                 table.AddColumn("Word");
                 table.AddColumn("Comprehension Score");
                 table.AddColumn("Date");
 
+                // Retrieve all collected words
                 List<string> collectedWords = dataManager.GetAllWords();
                 Console.WriteLine("Collected Words:");
                 foreach (var word in collectedWords)
@@ -136,6 +137,16 @@ namespace LanguageTracker
                     }
                 }
 
+                // Summary of learned words
+                int justStartedCount = collectedWords.Count(w => w.Contains(":1:"));
+                int stillLearningCount = collectedWords.Count(w => w.Contains(":2:"));
+                int veryFluentCount = collectedWords.Count(w => w.Contains(":3:"));
+                int totalWords = collectedWords.Count;
+
+                Console.WriteLine($"You have learned {totalWords} words.");
+                Console.WriteLine($"Comprehension Levels: Just Started: {justStartedCount}, Still Learning: {stillLearningCount}, Very Fluent: {veryFluentCount}");
+
+                // Display the table
                 AnsiConsole.Write(table);
             }
         }
