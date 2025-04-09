@@ -48,8 +48,8 @@ namespace LanguageTracker
                     // Ask for a new word from the user
                     string newWord = AskForInput("Enter new word: ");
 
-                    Console.WriteLine("WELCOME " + newWord + " To your Language Tracker");
-
+                    
+                    
                     // Check if the word already exists in the file
                     if (dataManager.WordExists(newWord))
                     {
